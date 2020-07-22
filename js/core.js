@@ -50,6 +50,8 @@ function core_init() {
     moonOrbit.position.set(10,0,0);
     moon.position.set(2,0,0);
 
+    moonOrbit.rotation.x = 0.3;
+    earth.rotation.x = 0.15;
     camera.position.z = 20;
 
     var update = function(){
