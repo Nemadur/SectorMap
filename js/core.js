@@ -23,6 +23,12 @@ function core_init() {
         camera.updateProjectionMatrix();
     });
 
+    window.addEventListener('dblclick', function () {
+        
+        camera.lookAt(0,0,0);
+
+    });
+
     
     var geometrySun = new THREE.SphereGeometry( 5, 32, 32 );
     var geometryEarth = new THREE.SphereGeometry( 1, 10, 10 );
@@ -52,7 +58,8 @@ function core_init() {
 
     moonOrbit.rotation.x = 0.3;
     earth.rotation.x = 0.15;
-    camera.position.z = 20;
+    camera.position.set(0,10,20);
+    camera.lookAt(0,0,0);
 
     // orbits visualization
     var earthPath = new THREE.EllipseCurve(
