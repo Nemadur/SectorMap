@@ -93,8 +93,9 @@ function core_init() {
 
     
     var spriteMap = new THREE.TextureLoader().load('textures/circle.png');
+    var spriteMapAlpha = new THREE.TextureLoader().load('textures/circle_alphamap.png');
     
-    var spriteMaterial = new THREE.SpriteMaterial({map: spriteMap});
+    var spriteMaterial = new THREE.SpriteMaterial({map: spriteMap, alphaMap: spriteMapAlpha});
     var sprite = new THREE.Sprite(spriteMaterial);
 
     sprite.position.set(0,0,0);
