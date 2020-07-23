@@ -90,6 +90,15 @@ function core_init() {
 
     var raycaster = new THREE.Raycaster();
     var mouse = new THREE.Vector2();
+
+    
+    var spriteMap = new THREE.TextureLoader().load('textures/circle.png');
+    
+    var spriteMaterial = new THREE.SpriteMaterial({map: spriteMap});
+    var sprite = new THREE.Sprite(spriteMaterial);
+
+    sprite.position.set(0,0,0);
+    scene.add(sprite)
     
     function onMouseMove( event ) {
     
