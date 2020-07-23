@@ -2,6 +2,16 @@
 $(document).ready(core_init);
 window.semantic_init = core_init;
 
+var selected = null;
+var system = {
+    stars: [
+        {name: 'sun', radius: 5, color: 0xffff00, rotation: 0.001}
+    ],
+    planets: [
+        {orbit: {radius: 10}, name: 'earth', radius: 1, color: 0x0000ff, rotation: 0.005, axisAngle: 0.15, satelites: []}
+    ]
+}
+
 function core_init() {
     
     var scene = new THREE.Scene();
@@ -66,15 +76,11 @@ function core_init() {
         0,  0,            // ax, aY
         10, 10,           // xRadius, yRadius
         0,  2 * Math.PI,  // aStartAngle, aEndAngle
-        false,            // aClockwise
-        0.3                 // aRotation
       );
     var moonPath = new THREE.EllipseCurve(
         0,  0,            // ax, aY
         2, 2,           // xRadius, yRadius
         0,  2 * Math.PI,  // aStartAngle, aEndAngle
-        false,            // aClockwise
-        0.3                 // aRotation
       );
       
     var pointsE = earthPath.getPoints( 50 );
