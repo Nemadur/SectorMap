@@ -85,8 +85,8 @@ function core_init() {
     ellipseE.rotation.x = Math.PI/2;
     ellipseM.rotation.x = Math.PI/2;
 
-    scene.add(ellipseE);
-    earth.add(ellipseM);
+    earthOrbit.add(ellipseE);
+    moonOrbit.add(ellipseM);
 
     var raycaster = new THREE.Raycaster();
     var mouse = new THREE.Vector2();
