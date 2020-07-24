@@ -3,6 +3,9 @@ import { corvus } from './corvus.js';
 
 $(document).ready(core_init);
 
+let stellarObjects = [];
+
+
 function core_init() {
     
     var scene = new THREE.Scene();
@@ -46,26 +49,81 @@ function core_init() {
         
         system.add(star);
 
-        // for (const key in system.planets) {
-        //     let planet = system.planets[key];
+        for (const key in data.planets) {
+            let planet = data.planets[key];
                 
+            createSatelite(planet, system);
 
-        // }
+        }
 
         return system;
     }
 
-    function createSphere(data, type = '') {
+    function createSatelite(data, system, anchor = 0 ) {
         
-        var sphereGeometry = new THREE.SphereGeometry( data.radius, 20, 20 );
+        let orbit = createOrbit(data);
+        let satelite = createSphere(data);
+
+        orbit.add(satelite);
+
+        if (anchor) {
+            orbit.position.set(anchor,0,0);
+        }
+
+        for (const index in data.satelite) {
+            const element = data.satelite[index];
+                
+            createSatelite(element, orbit, data.orbitRadius);
+        }
+
+        stellarObjects.push( [orbit, data.orbitRotation] );
+
+        system.add(orbit);
+    }
+
+    function createSphere(data, type = 'satelite') {
+        
+        var planes = type=='satelite' ? 10 : 25;
+
+        var sphereGeometry = new THREE.SphereGeometry( data.radius, planes, planes );
         var sphereMaterial = new THREE.MeshBasicMaterial( {color: data.color, wireframe: true} );
         var sphere = new THREE.Mesh( sphereGeometry, sphereMaterial );
+
+        if (type == 'satelite') {
+            sphere.position.set(data.orbitRadius,0,0);
+        }
+
+        if (data.skew) {
+            sphere.rotation.x = data.skew;
+        }
+
+        stellarObjects.push( [sphere, data.rotation] );
 
         return sphere;
     }
 
+    function createOrbit(data) {
+        
+        var orbit = new THREE.Object3D();
+        let orbitPath = new THREE.EllipseCurve(
+            0,  0,            // ax, aY
+            data.orbitRadius, data.orbitRadius,           // xRadius, yRadius
+            -0.2, 0.6*Math.PI,  // aStartAngle, aEndAngle
+            false,            // aClockwise
+            0.3                 // aRotation
+          );
+        let points = orbitPath.getPoints( 50 );
+        let orbitGeometry = new THREE.BufferGeometry().setFromPoints( points );
+        let material = new THREE.LineBasicMaterial( { color : 0xffffff } );
 
+        let orbitLine = new THREE.Line( orbitGeometry, material );
+        orbitLine.rotation.x = Math.PI/2;
 
+        orbit.add(orbitLine);
+
+        orbit.rotation.x = data.orbitSkew
+        return orbit;
+    }
 
 
 
@@ -77,8 +135,8 @@ function core_init() {
     var materialEarth = new THREE.MeshBasicMaterial( {color: 0x0000ff, wireframe: true} );
     var materialMoon = new THREE.MeshBasicMaterial( {color: 0xcccccc, wireframe: true} );
 
-    var earthOrbit = createOrbit(10);
-    var moonOrbit = createOrbit(2);
+    var earthOrbit = createOrbit({orbitRadius: 10, orbitSkew: 0});
+    var moonOrbit = createOrbit({orbitRadius: 2, orbitSkew: 0});
 
     var sun = new THREE.Mesh( geometrySun, materialSun );
     var earth = new THREE.Mesh( geometryEarth, materialEarth );
@@ -101,26 +159,7 @@ function core_init() {
     camera.position.set(0,10,20);
     camera.lookAt(0,0,0);
 
-    function createOrbit(radius) {
-        
-        var orbit = new THREE.Object3D();
-        let orbitPath = new THREE.EllipseCurve(
-            0,  0,            // ax, aY
-            radius, radius,           // xRadius, yRadius
-            -0.2, 0.6*Math.PI,  // aStartAngle, aEndAngle
-            false,            // aClockwise
-            0.3                 // aRotation
-          );
-        let points = orbitPath.getPoints( 50 );
-        let orbitGeometry = new THREE.BufferGeometry().setFromPoints( points );
-        let material = new THREE.LineBasicMaterial( { color : 0xffffff } );
 
-        let orbitLine = new THREE.Line( orbitGeometry, material );
-        orbitLine.rotation.x = Math.PI/2;
-
-        orbit.add(orbitLine);
-        return orbit;
-    }
 
     var raycaster = new THREE.Raycaster();
     var mouse = new THREE.Vector2();
@@ -158,6 +197,14 @@ function core_init() {
 
 
     var update = function(){
+
+        for (const index in stellarObjects) {
+            const element = stellarObjects[index];
+            
+            element[0].rotation.y += element[1];
+
+        }
+
         sun.rotation.y += 0.001;
         earth.rotation.y += 0.005;
         moon.rotation.y += 0.01;
