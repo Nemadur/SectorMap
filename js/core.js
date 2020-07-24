@@ -1,16 +1,6 @@
+import { RGBELoader } from '/js/RGBELoader.js';
 
 $(document).ready(core_init);
-window.semantic_init = core_init;
-
-var selected = null;
-var system = {
-    stars: [
-        {name: 'sun', radius: 5, color: 0xffff00, rotation: 0.001}
-    ],
-    planets: [
-        {orbit: {radius: 10}, name: 'earth', radius: 1, color: 0x0000ff, rotation: 0.005, axisAngle: 0.15, satelites: []}
-    ]
-}
 
 function core_init() {
     
@@ -76,11 +66,15 @@ function core_init() {
         0,  0,            // ax, aY
         10, 10,           // xRadius, yRadius
         0,  2 * Math.PI,  // aStartAngle, aEndAngle
+        false,            // aClockwise
+        0.3                 // aRotation
       );
     var moonPath = new THREE.EllipseCurve(
         0,  0,            // ax, aY
         2, 2,           // xRadius, yRadius
         0,  2 * Math.PI,  // aStartAngle, aEndAngle
+        false,            // aClockwise
+        0.3                 // aRotation
       );
       
     var pointsE = earthPath.getPoints( 50 );
@@ -115,6 +109,26 @@ function core_init() {
     }
     
     window.addEventListener( 'mousemove', onMouseMove, false );
+
+    var pmremGenerator = new THREE.PMREMGenerator( renderer );
+    pmremGenerator.compileEquirectangularShader();
+
+    new RGBELoader()
+    .setDataType( THREE.UnsignedByteType )
+    .load( 'materials/space.hdr', function ( texture ) {
+
+        var envMap = pmremGenerator.fromEquirectangular( texture ).texture;
+
+        scene.background = envMap;
+        scene.environment = envMap;
+
+        texture.dispose();
+        pmremGenerator.dispose();
+
+        render();
+
+    } );
+
 
     var update = function(){
         sun.rotation.y += 0.001;
