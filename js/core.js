@@ -108,7 +108,7 @@ function core_init() {
         let orbitPath = new THREE.EllipseCurve(
             0,  0,            // ax, aY
             data.orbitRadius, data.orbitRadius,           // xRadius, yRadius
-            -0.2, 0.6*Math.PI,  // aStartAngle, aEndAngle
+            -0.3, 0.6*Math.PI,  // aStartAngle, aEndAngle
             false,            // aClockwise
             0.3                 // aRotation
           );
