@@ -1,4 +1,4 @@
-import { RGBELoader } from './js/RGBELoader.js';
+import { RGBELoader } from './RGBELoader.js';
 
 $(document).ready(core_init);
 
