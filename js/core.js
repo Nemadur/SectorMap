@@ -115,7 +115,7 @@ function core_init() {
 
     new RGBELoader()
     .setDataType( THREE.UnsignedByteType )
-    .load( 'materials/space.hdr', function ( texture ) {
+    .load( 'materials/space_low.hdr', function ( texture ) {
 
         var envMap = pmremGenerator.fromEquirectangular( texture ).texture;
 
