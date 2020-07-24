@@ -1,4 +1,5 @@
 import { RGBELoader } from './RGBELoader.js';
+import { corvus } from './corvus.js';
 
 $(document).ready(core_init);
 
@@ -8,7 +9,6 @@ function core_init() {
     var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     var renderer = new THREE.WebGLRenderer();
     var controls = new THREE.OrbitControls( camera, renderer.domElement);
-
 
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild( renderer.domElement );
@@ -29,6 +29,46 @@ function core_init() {
 
     });
 
+
+    scene.add(createSystem(corvus.systems.test));
+
+    // stellarForge
+    function createSystem(data) {
+        
+        let system = new THREE.Object3D();
+        system.position.set(
+            data.position.x,
+            data.position.y,
+            data.position.z
+        );
+
+        let star = createSphere( data.star, data.star.type );
+        
+        system.add(star);
+
+        // for (const key in system.planets) {
+        //     let planet = system.planets[key];
+                
+
+        // }
+
+        return system;
+    }
+
+    function createSphere(data, type = '') {
+        
+        var sphereGeometry = new THREE.SphereGeometry( data.radius, 20, 20 );
+        var sphereMaterial = new THREE.MeshBasicMaterial( {color: data.color, wireframe: true} );
+        var sphere = new THREE.Mesh( sphereGeometry, sphereMaterial );
+
+        return sphere;
+    }
+
+
+
+
+
+
     
     var geometrySun = new THREE.SphereGeometry( 5, 32, 32 );
     var geometryEarth = new THREE.SphereGeometry( 1, 10, 10 );
@@ -37,8 +77,8 @@ function core_init() {
     var materialEarth = new THREE.MeshBasicMaterial( {color: 0x0000ff, wireframe: true} );
     var materialMoon = new THREE.MeshBasicMaterial( {color: 0xcccccc, wireframe: true} );
 
-    var earthOrbit = new THREE.Object3D();
-    var moonOrbit = new THREE.Object3D();
+    var earthOrbit = createOrbit(10);
+    var moonOrbit = createOrbit(2);
 
     var sun = new THREE.Mesh( geometrySun, materialSun );
     var earth = new THREE.Mesh( geometryEarth, materialEarth );
@@ -61,39 +101,26 @@ function core_init() {
     camera.position.set(0,10,20);
     camera.lookAt(0,0,0);
 
-    // orbits visualization
-    var earthPath = new THREE.EllipseCurve(
-        0,  0,            // ax, aY
-        10, 10,           // xRadius, yRadius
-        0,  2 * Math.PI,  // aStartAngle, aEndAngle
-        false,            // aClockwise
-        0.3                 // aRotation
-      );
-    var moonPath = new THREE.EllipseCurve(
-        0,  0,            // ax, aY
-        2, 2,           // xRadius, yRadius
-        0,  2 * Math.PI,  // aStartAngle, aEndAngle
-        false,            // aClockwise
-        0.3                 // aRotation
-      );
-      
-    var pointsE = earthPath.getPoints( 50 );
-    var pointsM = moonPath.getPoints( 50 );
+    function createOrbit(radius) {
+        
+        var orbit = new THREE.Object3D();
+        let orbitPath = new THREE.EllipseCurve(
+            0,  0,            // ax, aY
+            radius, radius,           // xRadius, yRadius
+            -0.2, 0.6*Math.PI,  // aStartAngle, aEndAngle
+            false,            // aClockwise
+            0.3                 // aRotation
+          );
+        let points = orbitPath.getPoints( 50 );
+        let orbitGeometry = new THREE.BufferGeometry().setFromPoints( points );
+        let material = new THREE.LineBasicMaterial( { color : 0xffffff } );
 
-    var geometryE = new THREE.BufferGeometry().setFromPoints( pointsE );
-    var geometryM = new THREE.BufferGeometry().setFromPoints( pointsM );
+        let orbitLine = new THREE.Line( orbitGeometry, material );
+        orbitLine.rotation.x = Math.PI/2;
 
-    var material = new THREE.LineBasicMaterial( { color : 0xffffff } );
-    
-    // Create the final object to add to the scene
-    var ellipseE = new THREE.Line( geometryE, material );
-    var ellipseM = new THREE.Line( geometryM, material );
-    
-    ellipseE.rotation.x = Math.PI/2;
-    ellipseM.rotation.x = Math.PI/2;
-
-    earthOrbit.add(ellipseE);
-    moonOrbit.add(ellipseM);
+        orbit.add(orbitLine);
+        return orbit;
+    }
 
     var raycaster = new THREE.Raycaster();
     var mouse = new THREE.Vector2();
