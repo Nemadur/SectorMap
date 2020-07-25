@@ -4,7 +4,7 @@ import { corvus } from './corvus.js';
 $(document).ready(core_init);
 
 let stellarObjects = [];
-
+let selectedObject = null;
 
 function core_init() {
     
@@ -32,8 +32,7 @@ function core_init() {
 
     });
 
-
-    scene.add(createSystem(corvus.systems.test));
+    scene.add(createSystem(corvus.systems[0]));
 
     // stellarForge
     function createSystem(data) {
@@ -124,54 +123,28 @@ function core_init() {
         orbit.rotation.x = data.orbitSkew
         return orbit;
     }
-
-
-
     
-    var geometrySun = new THREE.SphereGeometry( 5, 32, 32 );
-    var geometryEarth = new THREE.SphereGeometry( 1, 10, 10 );
-    var geometryMoon = new THREE.SphereGeometry( 0.3, 10, 10 );
-    var materialSun = new THREE.MeshBasicMaterial( {color: 0xffff00, wireframe: true} );
-    var materialEarth = new THREE.MeshBasicMaterial( {color: 0x0000ff, wireframe: true} );
-    var materialMoon = new THREE.MeshBasicMaterial( {color: 0xcccccc, wireframe: true} );
-
-    var earthOrbit = createOrbit({orbitRadius: 10, orbitSkew: 0});
-    var moonOrbit = createOrbit({orbitRadius: 2, orbitSkew: 0});
-
-    var sun = new THREE.Mesh( geometrySun, materialSun );
-    var earth = new THREE.Mesh( geometryEarth, materialEarth );
-    var moon = new THREE.Mesh( geometryMoon, materialMoon );
-    
-    sun.position.set(0,0,0);
-
-    scene.add( sun );
-    scene.add( earthOrbit );
-    earthOrbit.add(earth);
-    earthOrbit.add(moonOrbit);
-    moonOrbit.add(moon);
-
-    earth.position.set(10,0,0);
-    moonOrbit.position.set(10,0,0);
-    moon.position.set(2,0,0);
-
-    moonOrbit.rotation.x = 0.3;
-    earth.rotation.x = 0.15;
     camera.position.set(0,10,20);
     camera.lookAt(0,0,0);
 
+
+    var spriteMap = new THREE.TextureLoader().load( "./materials/target.svg" );
+    var spriteMaterial = new THREE.SpriteMaterial( { map: spriteMap } );
+    var sprite = new THREE.Sprite( spriteMaterial );
+    // sprite.scale.set(13,13,0);
+    sprite.scale.set(5,5,0);
+    scene.add( sprite );
 
 
     var raycaster = new THREE.Raycaster();
     var mouse = new THREE.Vector2();
     
     function onMouseMove( event ) {
-    
         // calculate mouse position in normalized device coordinates
         // (-1 to +1) for both components
-    
         mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
         mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-    
+
     }
     
     window.addEventListener( 'mousemove', onMouseMove, false );
@@ -195,22 +168,28 @@ function core_init() {
 
     } );
 
+    let scalar = -0.1;
+    let scalarStep = 0.01
 
     var update = function(){
 
         for (const index in stellarObjects) {
             const element = stellarObjects[index];
-            
             element[0].rotation.y += element[1];
-
         }
 
-        sun.rotation.y += 0.001;
-        earth.rotation.y += 0.005;
-        moon.rotation.y += 0.01;
+        if (scalar > 0.1) {
+            scalarStep = -0.01;
+        }
+        if (scalar < -0.1) {
+            scalarStep = 0.01;
+        }
 
-        earthOrbit.rotation.y += 0.005;
-        moonOrbit.rotation.y += 0.01;
+        scalar += scalarStep
+
+        sprite.scale.x += scalar;
+        sprite.scale.y += scalar;
+
     };
 
     function render() {
@@ -220,19 +199,33 @@ function core_init() {
     
         // calculate objects intersecting the picking ray
         var intersects = raycaster.intersectObjects( scene.children, true );
-    
-        sun.material.color.set(0xffff00);
-        earth.material.color.set(0x0000ff);
-        moon.material.color.set(0xcccccc);
+        var intercetFlag = false;
 
         for (const objects of intersects) {
 
             if (objects.object.type != 'Mesh') {
                 continue
             }
-            objects.object.material.color.set( 0x00ff00 );
-            break;
 
+            intercetFlag = true;
+
+            if (!selectedObject || selectedObject.uuid != objects.object.uuid) {
+
+                selectedObject = objects.object;
+
+                var scale = objects.object.geometry.boundingSphere.radius * 2 +2;
+                sprite.scale.set(scale,scale,0)
+                scalar = -0.1;
+                scalarStep = 0.01
+                selectedObject.add(sprite);
+            }
+
+            break;
+        }
+
+        if (!intercetFlag && selectedObject) {
+            selectedObject.remove(sprite);
+            selectedObject = null
         }
 
         renderer.render( scene, camera );
