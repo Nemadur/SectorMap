@@ -5,6 +5,8 @@ $(document).ready(core_init);
 
 let stellarObjects = [];
 let selectedObject = null;
+var temp = new THREE.Vector3;
+let focusObject = null;
 
 function core_init() {
     
@@ -28,7 +30,12 @@ function core_init() {
 
     window.addEventListener('dblclick', function () {
         
-        camera.lookAt(0,0,0);
+        if (selectedObject) {
+            var positions = selectedObject.position
+            controls.target.set(positions.x, positions.y, positions.z);
+            camera.lookAt(positions.x, positions.y, positions.z)
+        }
+        focusObject = selectedObject;
 
     });
 
@@ -127,14 +134,9 @@ function core_init() {
     camera.position.set(0,10,20);
     camera.lookAt(0,0,0);
 
-
     var spriteMap = new THREE.TextureLoader().load( "./materials/target.svg" );
     var spriteMaterial = new THREE.SpriteMaterial( { map: spriteMap } );
     var sprite = new THREE.Sprite( spriteMaterial );
-    // sprite.scale.set(13,13,0);
-    sprite.scale.set(5,5,0);
-    scene.add( sprite );
-
 
     var raycaster = new THREE.Raycaster();
     var mouse = new THREE.Vector2();
@@ -226,6 +228,20 @@ function core_init() {
         if (!intercetFlag && selectedObject) {
             selectedObject.remove(sprite);
             selectedObject = null
+        }
+
+        if (focusObject) {
+
+            temp.setFromMatrixPosition(focusObject.matrixWorld);
+
+            let radius = focusObject.geometry.boundingSphere.radius * 1.3;
+            temp.y += radius;
+            temp.x += radius;
+            temp.z += radius;
+            var v3 = new THREE.Vector3();
+            camera.position.lerp(temp, 0.2);
+            camera.lookAt( focusObject.getWorldPosition(v3) );
+            
         }
 
         renderer.render( scene, camera );
