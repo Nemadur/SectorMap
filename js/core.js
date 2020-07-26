@@ -7,7 +7,6 @@ let stellarObjects = [];
 let selectedObject = null;
 var temp = new THREE.Vector3;
 let focusObject = null;
-let cloudParticles = [];
 
 function core_init() {
     
@@ -41,23 +40,13 @@ function core_init() {
     });
 
     scene.add(createSystem(corvus.systems[0]));
-
-
-    function createRing(data) {
-
-        var radius = data.radius + data.width/2;
-
-        var geometry = new THREE.TorusGeometry( radius, data.width/2 , 2, 30 );
-        var texture = new THREE.TextureLoader().load('materials/ring.png');
-        var material = new THREE.MeshBasicMaterial( { map: texture, transparent: true } );
-        var torus = new THREE.Mesh( geometry, material );
-        torus.rotation.x = Math.PI/2
-
-        return torus
-    }
+    stellarObjects.forEach(ob => {
+        ob[0].rotation.y +=Math.random() * (Math.PI*2);
+    })
 
 
 
+    
     //
     //
     //
@@ -113,7 +102,14 @@ function core_init() {
         var planes = 50;
 
         var sphereGeometry = new THREE.SphereGeometry( data.radius, planes, planes );
-        var sphereMaterial = new THREE.MeshBasicMaterial( {color: data.color, wireframe: false} );
+
+        if (type != 'satelite') {
+            var texture = new THREE.TextureLoader().load('materials/star.jpg');
+            var sphereMaterial = new THREE.MeshBasicMaterial( { map: texture, transparent: true } );
+        } else {
+            var sphereMaterial = new THREE.MeshBasicMaterial( {color: data.color, wireframe: false} );
+        }
+
         var sphere = new THREE.Mesh( sphereGeometry, sphereMaterial );
 
         if (type == 'satelite') {
@@ -131,6 +127,19 @@ function core_init() {
         }
 
         return sphere;
+    }
+
+    function createRing(data) {
+
+        var radius = data.radius + data.width/2;
+
+        var geometry = new THREE.TorusGeometry( radius, data.width/2 , 2, 30 );
+        var texture = new THREE.TextureLoader().load('materials/ring.png');
+        var material = new THREE.MeshBasicMaterial( { map: texture, transparent: true } );
+        var torus = new THREE.Mesh( geometry, material );
+        torus.rotation.x = Math.PI/2
+
+        return torus
     }
 
     function createOrbit(data) {
