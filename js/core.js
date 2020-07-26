@@ -7,11 +7,12 @@ let stellarObjects = [];
 let selectedObject = null;
 var temp = new THREE.Vector3;
 let focusObject = null;
+let cloudParticles = [];
 
 function core_init() {
     
     var scene = new THREE.Scene();
-    var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100000);
     var renderer = new THREE.WebGLRenderer();
     var controls = new THREE.OrbitControls( camera, renderer.domElement);
 
@@ -41,6 +42,25 @@ function core_init() {
 
     scene.add(createSystem(corvus.systems[0]));
 
+
+    function createRing(data) {
+
+        var radius = data.radius + data.width/2;
+
+        var geometry = new THREE.TorusGeometry( radius, data.width/2 , 2, 30 );
+        var texture = new THREE.TextureLoader().load('materials/ring.png');
+        var material = new THREE.MeshBasicMaterial( { map: texture, transparent: true } );
+        var torus = new THREE.Mesh( geometry, material );
+        torus.rotation.x = Math.PI/2
+
+        return torus
+    }
+
+
+
+    //
+    //
+    //
     // stellarForge
     function createSystem(data) {
         
@@ -89,10 +109,11 @@ function core_init() {
 
     function createSphere(data, type = 'satelite') {
         
-        var planes = type=='satelite' ? 10 : 25;
+        // var planes = type=='satelite' ? 20 : 40;
+        var planes = 50;
 
         var sphereGeometry = new THREE.SphereGeometry( data.radius, planes, planes );
-        var sphereMaterial = new THREE.MeshBasicMaterial( {color: data.color, wireframe: true} );
+        var sphereMaterial = new THREE.MeshBasicMaterial( {color: data.color, wireframe: false} );
         var sphere = new THREE.Mesh( sphereGeometry, sphereMaterial );
 
         if (type == 'satelite') {
@@ -104,6 +125,10 @@ function core_init() {
         }
 
         stellarObjects.push( [sphere, data.rotation] );
+
+        if (data.ring) {
+            sphere.add(createRing(data.ring) )
+        }
 
         return sphere;
     }
@@ -175,10 +200,9 @@ function core_init() {
 
     var update = function(){
 
-        for (const index in stellarObjects) {
-            const element = stellarObjects[index];
-            element[0].rotation.y += element[1];
-        }
+        stellarObjects.forEach(ob => {
+            ob[0].rotation.y +=ob[1]
+        })
 
         if (scalar > 0.1) {
             scalarStep = -0.01;
@@ -235,9 +259,9 @@ function core_init() {
             temp.setFromMatrixPosition(focusObject.matrixWorld);
 
             let radius = focusObject.geometry.boundingSphere.radius * 1.3;
-            temp.y += radius;
-            temp.x += radius;
-            temp.z += radius;
+            temp.y += radius+2;
+            temp.x += radius+2;
+            temp.z += radius+2;
             var v3 = new THREE.Vector3();
             camera.position.lerp(temp, 0.2);
             camera.lookAt( focusObject.getWorldPosition(v3) );
