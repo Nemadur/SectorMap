@@ -3,7 +3,7 @@ var corvus = {
         {
             position: {x:0, y:0, z:0},
             name: 'test',
-            star: {name: 'sun', radius: 5, color: 0xffff00, rotation: 0.001, type: 'star' },
+            star: {name: 'sun', radius: 4, color: 0xffff00, rotation: 0.001, type: 'star' },
             planets: [
                 {name: 'mercury', radius: 0.2, color: 0xA06153, rotation: 0.0001, orbitRotation: 0.02 ,orbitRadius: 6, orbitSkew: 0, skew: 0, tags: ['earthlike', 'test'], satelite:[]},
                 {name: 'venus', radius: 1, color: 0x5A3DA1, rotation: 0, orbitRotation: 0.003 ,orbitRadius: 8, orbitSkew: 0, skew: 0, tags: ['earthlike', 'test'], satelite:[]},

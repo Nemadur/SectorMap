@@ -46,7 +46,32 @@ function core_init() {
 
 
 
-    
+    var sphereGeom = new THREE.SphereGeometry(4, 32, 16);
+
+	var customMaterial = new THREE.ShaderMaterial( 
+        {
+            uniforms: 
+            { 
+                "c":   { type: "f", value: 0.4 },
+                "p":   { type: "f", value: 3 },
+                glowColor: { type: "c", value: new THREE.Color(0xffff00) },
+                viewVector: { type: "v3", value: camera.position }
+            },
+            vertexShader:   document.getElementById( 'vertexShader'   ).textContent,
+            fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
+            side: THREE.BackSide,
+            blending: THREE.AdditiveBlending,
+            transparent: true
+        }   );
+            
+    var moonGlow = new THREE.Mesh( sphereGeom.clone(), customMaterial.clone() );
+    moonGlow.position.set(0,0,0)
+    moonGlow.scale.multiplyScalar(1.2);
+    scene.add( moonGlow );
+
+
+
+
     //
     //
     //
@@ -70,6 +95,12 @@ function core_init() {
             createSatelite(planet, system);
 
         }
+
+        var light = new THREE.AmbientLight( 0x404040 ); // soft white light
+        var light1 = new THREE.PointLight( 0xffffff, 1 );
+        
+        scene.add( light );
+        scene.add( light1 );
 
         return system;
     }
@@ -106,8 +137,9 @@ function core_init() {
         if (type != 'satelite') {
             var texture = new THREE.TextureLoader().load('materials/star.jpg');
             var sphereMaterial = new THREE.MeshBasicMaterial( { map: texture, transparent: true } );
+            
         } else {
-            var sphereMaterial = new THREE.MeshBasicMaterial( {color: data.color, wireframe: false} );
+            var sphereMaterial = new THREE.MeshPhongMaterial( {color: data.color, wireframe: false, flatShading: false} );
         }
 
         var sphere = new THREE.Mesh( sphereGeometry, sphereMaterial );
@@ -220,6 +252,9 @@ function core_init() {
             scalarStep = 0.01;
         }
 
+        moonGlow.material.uniforms.viewVector.value = 
+        new THREE.Vector3().subVectors( camera.position, moonGlow.position );
+        
         scalar += scalarStep
 
         sprite.scale.x += scalar;
