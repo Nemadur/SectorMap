@@ -130,7 +130,7 @@ function core_init() {
     function createSphere(data, type = 'satelite') {
         
         // var planes = type=='satelite' ? 20 : 40;
-        var planes = 50;
+        var planes = 25;
 
         var sphereGeometry = new THREE.SphereGeometry( data.radius, planes, planes );
 
@@ -239,6 +239,13 @@ function core_init() {
     let scalar = -0.1;
     let scalarStep = 0.01
 
+
+
+    let clock = new THREE.Clock();
+    let delta = 0;
+    // 30 fps
+    let interval = 1 / 30;
+
     var update = function(){
 
         stellarObjects.forEach(ob => {
@@ -317,10 +324,17 @@ function core_init() {
     }
 
     var loop = function () {
-        requestAnimationFrame( loop );
 
-        update();
-        render();
+
+        requestAnimationFrame( loop );
+        delta += clock.getDelta();
+        if (delta >= interval) {
+            
+            update();
+            render();
+
+            delta = delta % interval;
+        }
 
     }
 
