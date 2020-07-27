@@ -61,6 +61,13 @@ function createSphere(data, type = 'satelite') {
     if (data.ring) {
         sphere.add(createRing(data.ring) )
     }
+    
+    var myText = new SpriteText(data.name);
+    myText.fontSize = 30;
+    myText.scale.set(3.2,1,0)
+    myText.center.set(0,0);
+    myText.position.set(0,data.radius,0);
+    sphere.add(myText);
 
     return sphere;
 }
