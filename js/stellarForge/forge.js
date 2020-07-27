@@ -63,10 +63,10 @@ function createSphere(data, type = 'satelite') {
     }
     
     var myText = new SpriteText(data.name);
-    myText.fontSize = 30;
-    myText.scale.set(3.2,1,0)
+    myText.fontFace = 'aAtmospheric'
+    myText.scale.set(data.radius,data.radius/3,0)
     myText.center.set(0,0);
-    myText.position.set(0,data.radius,0);
+    myText.position.set(0,data.radius+0.1,0);
     sphere.add(myText);
 
     return sphere;

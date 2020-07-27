@@ -1,3 +1,7 @@
+@font-face {
+    font-family: aAtmospheric;
+    src: url(aAtmospheric.ttf);
+}
 
 body { margin: 0;}
 
@@ -5,4 +9,5 @@ canvas { width: 100%; height: 100%;}
 
 #userInterface{
     position: absolute;
+    font-family: aAtmospheric;
 }
