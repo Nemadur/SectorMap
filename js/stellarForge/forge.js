@@ -5,6 +5,7 @@ import {Planet} from './Planet.js';
 import {Ring} from './Ring.js';
 
 var stellarObjects = [];
+let system = new THREE.Object3D();
 
 function createSatelite(planet, system, anchor = 0 ) {
     
@@ -105,7 +106,6 @@ var stellarForge = function(planetarySystem) {
     let data = planetarySystem.system;
     // data.position
 
-    let system = new THREE.Object3D();
     system.position.copy(planetarySystem.position);
 
     let star = createSphere( data.star, data.star.type );
