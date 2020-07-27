@@ -1,5 +1,6 @@
 import { RGBELoader } from './RGBELoader.js';
-import { corvus } from './corvus.js';
+import { PlanetarySystem } from '../systems/solarSystem.js';
+import { stellarForge, stellarForgeObjects } from './stellarForge/forge.js';
 
 $(document).ready(core_init);
 
@@ -39,15 +40,37 @@ function core_init() {
 
     });
 
-    scene.add(createSystem(corvus.systems[0]));
+    // 
+    // 
+    // stellarForge
+    scene.add(stellarForge(new PlanetarySystem(new THREE.Vector3(0, 0,0))));
+    stellarObjects = stellarForgeObjects;
+    camera.position.set(0,10,20);
+    camera.lookAt(0,0,0);
+
+
+    // 
+    // 
+    // add Light to the scene
+    var light = new THREE.AmbientLight( 0x404040 ); // soft white light
+    var starLight = new THREE.PointLight( 0xffffff, 1 );
+    
+    scene.add( light );
+    scene.add( starLight );
+
+
+    // 
+    // 
+    // Random placement
     stellarObjects.forEach(ob => {
         ob[0].rotation.y +=Math.random() * (Math.PI*2);
     })
 
 
-
+    // 
+    // 
+    // GLOW
     var sphereGeom = new THREE.SphereGeometry(4, 32, 16);
-
 	var customMaterial = new THREE.ShaderMaterial( 
         {
             uniforms: 
@@ -69,137 +92,32 @@ function core_init() {
     moonGlow.scale.multiplyScalar(1.2);
     scene.add( moonGlow );
 
-
-
-
-    //
-    //
-    //
-    // stellarForge
-    function createSystem(data) {
-        
-        let system = new THREE.Object3D();
-        system.position.set(
-            data.position.x,
-            data.position.y,
-            data.position.z
-        );
-
-        let star = createSphere( data.star, data.star.type );
-        
-        system.add(star);
-
-        for (const key in data.planets) {
-            let planet = data.planets[key];
-                
-            createSatelite(planet, system);
-
-        }
-
-        var light = new THREE.AmbientLight( 0x404040 ); // soft white light
-        var light1 = new THREE.PointLight( 0xffffff, 1 );
-        
-        scene.add( light );
-        scene.add( light1 );
-
-        return system;
-    }
-
-    function createSatelite(data, system, anchor = 0 ) {
-        
-        let orbit = createOrbit(data);
-        let satelite = createSphere(data);
-
-        orbit.add(satelite);
-
-        if (anchor) {
-            orbit.position.set(anchor,0,0);
-        }
-
-        for (const index in data.satelite) {
-            const element = data.satelite[index];
-                
-            createSatelite(element, orbit, data.orbitRadius);
-        }
-
-        stellarObjects.push( [orbit, data.orbitRotation] );
-
-        system.add(orbit);
-    }
-
-    function createSphere(data, type = 'satelite') {
-        
-        // var planes = type=='satelite' ? 20 : 40;
-        var planes = 25;
-
-        var sphereGeometry = new THREE.SphereGeometry( data.radius, planes, planes );
-
-        if (type != 'satelite') {
-            var texture = new THREE.TextureLoader().load('materials/star.jpg');
-            var sphereMaterial = new THREE.MeshBasicMaterial( { map: texture, transparent: true } );
+    var sphereGeom = new THREE.SphereGeometry(1, 25, 16);
+	var customMaterial = new THREE.ShaderMaterial( 
+        {
+            uniforms: 
+            { 
+                "c":   { type: "f", value: 0.4 },
+                "p":   { type: "f", value: 3 },
+                glowColor: { type: "c", value: new THREE.Color(0xa0a0ff) },
+                viewVector: { type: "v3", value: camera.position }
+            },
+            vertexShader:   document.getElementById( 'vertexShader'   ).textContent,
+            fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
+            side: THREE.BackSide,
+            blending: THREE.AdditiveBlending,
+            transparent: true
+        }   );
             
-        } else {
-            var sphereMaterial = new THREE.MeshPhongMaterial( {color: data.color, wireframe: false, flatShading: false} );
-        }
+    var earthGlow = new THREE.Mesh( sphereGeom.clone(), customMaterial.clone() );
+    earthGlow.position.set(0,0,0)
+    earthGlow.scale.multiplyScalar(1.2);
+    scene.add( earthGlow );
 
-        var sphere = new THREE.Mesh( sphereGeometry, sphereMaterial );
 
-        if (type == 'satelite') {
-            sphere.position.set(data.orbitRadius,0,0);
-        }
-
-        if (data.skew) {
-            sphere.rotation.x = data.skew;
-        }
-
-        stellarObjects.push( [sphere, data.rotation] );
-
-        if (data.ring) {
-            sphere.add(createRing(data.ring) )
-        }
-
-        return sphere;
-    }
-
-    function createRing(data) {
-
-        var radius = data.radius + data.width/2;
-
-        var geometry = new THREE.TorusGeometry( radius, data.width/2 , 2, 30 );
-        var texture = new THREE.TextureLoader().load('materials/ring.png');
-        var material = new THREE.MeshBasicMaterial( { map: texture, transparent: true } );
-        var torus = new THREE.Mesh( geometry, material );
-        torus.rotation.x = Math.PI/2
-
-        return torus
-    }
-
-    function createOrbit(data) {
-        
-        var orbit = new THREE.Object3D();
-        let orbitPath = new THREE.EllipseCurve(
-            0,  0,            // ax, aY
-            data.orbitRadius, data.orbitRadius,           // xRadius, yRadius
-            -0.3, 0.6*Math.PI,  // aStartAngle, aEndAngle
-            false,            // aClockwise
-            0.3                 // aRotation
-          );
-        let points = orbitPath.getPoints( 50 );
-        let orbitGeometry = new THREE.BufferGeometry().setFromPoints( points );
-        let material = new THREE.LineBasicMaterial( { color : 0xffffff } );
-
-        let orbitLine = new THREE.Line( orbitGeometry, material );
-        orbitLine.rotation.x = Math.PI/2;
-
-        orbit.add(orbitLine);
-
-        orbit.rotation.x = data.orbitSkew
-        return orbit;
-    }
-    
-    camera.position.set(0,10,20);
-    camera.lookAt(0,0,0);
-
+    // 
+    // 
+    // Target sprite
     var spriteMap = new THREE.TextureLoader().load( "./materials/target.svg" );
     var spriteMaterial = new THREE.SpriteMaterial( { map: spriteMap } );
     var sprite = new THREE.Sprite( spriteMaterial );
@@ -217,13 +135,16 @@ function core_init() {
     
     window.addEventListener( 'mousemove', onMouseMove, false );
 
+
+    // 
+    // 
+    // HDR Map
     var pmremGenerator = new THREE.PMREMGenerator( renderer );
     pmremGenerator.compileEquirectangularShader();
 
     new RGBELoader()
     .setDataType( THREE.UnsignedByteType )
     .load( 'materials/space_low.hdr', function ( texture ) {
-
         var envMap = pmremGenerator.fromEquirectangular( texture ).texture;
 
         scene.background = envMap;
@@ -233,24 +154,25 @@ function core_init() {
         pmremGenerator.dispose();
 
         render();
-
     } );
 
-    let scalar = -0.1;
-    let scalarStep = 0.01
 
-
-
+    // 
+    // 
+    // U P D A T E
     let clock = new THREE.Clock();
     let delta = 0;
     // 30 fps
     let interval = 1 / 30;
+    let scalar = -0.1;
+    let scalarStep = 0.01
 
     var update = function(){
 
-        stellarObjects.forEach(ob => {
-            ob[0].rotation.y +=ob[1]
-        })
+        for (let index = 0; index < stellarObjects.length; index++) {
+            const body = stellarObjects[index];
+            body[0].rotation.y +=body[1]
+        }
 
         if (scalar > 0.1) {
             scalarStep = -0.01;
@@ -262,6 +184,13 @@ function core_init() {
         moonGlow.material.uniforms.viewVector.value = 
         new THREE.Vector3().subVectors( camera.position, moonGlow.position );
         
+        var v3 = new THREE.Vector3();
+        stellarObjects[5][0].getWorldPosition(v3)
+        earthGlow.position.copy( v3) ;
+        earthGlow.material.uniforms.viewVector.value = 
+        new THREE.Vector3().subVectors( camera.position, earthGlow.position );
+
+
         scalar += scalarStep
 
         sprite.scale.x += scalar;
@@ -324,8 +253,6 @@ function core_init() {
     }
 
     var loop = function () {
-
-
         requestAnimationFrame( loop );
         delta += clock.getDelta();
         if (delta >= interval) {
@@ -335,9 +262,7 @@ function core_init() {
 
             delta = delta % interval;
         }
-
     }
 
     loop();
-
 }

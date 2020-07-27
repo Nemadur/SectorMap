@@ -1,26 +1,78 @@
-var corvus = {
-    systems: [
-        {
-            position: {x:0, y:0, z:0},
-            name: 'test',
-            star: {name: 'sun', radius: 4, color: 0xffff00, rotation: 0.001, type: 'star' },
-            planets: [
-                {name: 'mercury', radius: 0.2, color: 0xA06153, rotation: 0.0001, orbitRotation: 0.02 ,orbitRadius: 6, orbitSkew: 0, skew: 0, tags: ['earthlike', 'test'], satelite:[]},
-                {name: 'venus', radius: 1, color: 0x5A3DA1, rotation: 0, orbitRotation: 0.003 ,orbitRadius: 8, orbitSkew: 0, skew: 0, tags: ['earthlike', 'test'], satelite:[]},
+class StellarBody {
+    constructor(name, radius, type, color, rotation, tags, skew, texture = null){
+        this.name = name;
+        this.type = type;
+        this.radius = radius;
+        this.skew = skew
+        this.color = color;
+        this.texture = texture;
+        this.rotation = rotation;
+        this.tags = tags;
+        this.mesh = null;
+        this.orbit = null;
+        this.atmosphere = null;
+    };
 
-                {name: 'earth', radius: 1, color: 0x0000ff, rotation: 0.005, orbitRotation: 0.005 ,orbitRadius: 12, orbitSkew: 0, skew: 0.15, tags: ['earthlike', 'test'], satelite:[
-                    { name: 'moon', radius: 0.3, color: 0xcccccc, rotation: 0.01, orbitRotation: 0.01, orbitRadius: 2, orbitSkew: 0.3, skew: 0, tags: ['test'], satelite: [] }
-                ]},
-                {name: 'mars', radius: 1.1, color: 0xff0000, rotation: 0.01, orbitRotation: 0.004 ,orbitRadius: 19, orbitSkew: 0, skew: 0.07, tags: ['earthlike', 'test'], satelite:[]},
-                {name: 'jupiter', radius: 3, color: 0xC49A24, rotation: 0.004, orbitRotation: 0.002 ,orbitRadius: 30, orbitSkew: 0, skew: 0, tags: ['earthlike', 'test'], satelite:[]},
-                {name: 'saturn', radius: 2.2, color: 0xeeea21, rotation: 0.01, orbitRotation: 0.0017 ,orbitRadius: 40, orbitSkew: 0.1, skew: 0.5, tags: ['earthlike', 'test'], satelite:[], ring:{radius:3, width: 4, color:0xcccccc}},
-                {name: 'uran', radius: 1.3, color: 0x263CAC, rotation: 0.01, orbitRotation: 0.0010 ,orbitRadius: 55, orbitSkew: 0, skew: 0, tags: ['earthlike', 'test'], satelite:[]},
-                {name: 'neptun', radius: 1.1, color: 0x263Cee, rotation: 0.01, orbitRotation: 0.0008 ,orbitRadius: 80, orbitSkew: 0.1, skew: 0, tags: ['earthlike', 'test'], satelite:[], ring:{radius:1.3, width: 0.2, color:0xcccccc}},
-                {name: 'pluto', radius: 0.6, color: 0xeeeaee, rotation: 0.01, orbitRotation: 0.0005 ,orbitRadius: 100, orbitSkew: 0.4, skew: 0, tags: ['earthlike', 'test'], satelite:[]},
+    addMesh(mesh){
+        this.mesh = mesh;
+    };
 
-            ]
-        }
-    ]
+    addOrbit(orbit){
+        this.orbit = orbit;
+    };
+
+    addAtmosphere(atmosphere){
+        this.atmosphere = atmosphere;
+    };
 }
 
-export { corvus };
+class Planet extends StellarBody {
+    constructor(data){
+        super(
+            data.name, 
+            data.radius, 
+            data.type, 
+            data.color, 
+            data.rotation, 
+            data.tags,
+            data.skew
+            );
+        
+        this.orbitRotation = data.orbitRotation;
+        this.orbitRadius = data.orbitRadius;
+        this.orbitSkew = data.orbitSkew;
+        this.satelites = data.satelites;
+        this.ring = data.ring;
+    }
+}
+
+class Star extends StellarBody{
+    constructor(data){
+        super(
+            data.name, 
+            data.radius, 
+            data.type, 
+            data.color, 
+            data.rotation, 
+            data.tags,
+            data.skew
+            );
+    }
+}
+   
+class Ring {
+    constructor(radius, width, texture = null){
+        this.radius = radius;
+        this.width = width;
+        this.texture = texture;
+    }
+}
+class SolarSystem {
+    constructor(name = ''){
+        this.name = name
+        this.star = null;
+        this.planets = [];
+    }
+}
+
+export { Planet, Star, SolarSystem, Ring };
