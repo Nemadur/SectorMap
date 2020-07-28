@@ -61,15 +61,78 @@ function createSphere(data, type = 'satelite') {
     if (data.ring) {
         sphere.add(createRing(data.ring) )
     }
-    
-    var myText = new SpriteText(data.name);
-    myText.fontFace = 'aAtmospheric'
-    myText.scale.set(data.radius,data.radius/3,0)
-    myText.center.set(0,0);
-    myText.position.set(0,data.radius+0.1,0);
-    sphere.add(myText);
+
+    var sprite = drawNameSprite(data.name, data.radius);
+    sphere.add(sprite);
 
     return sphere;
+}
+
+function drawNameSprite(name = '', radius) {
+
+    var PIXEL_RATIO = (function() {
+      var ctx = document.createElement("canvas").getContext("2d"),
+        dpr = window.devicePixelRatio || 1,
+        bsr =
+          ctx.webkitBackingStorePixelRatio ||
+          ctx.mozBackingStorePixelRatio ||
+          ctx.msBackingStorePixelRatio ||
+          ctx.oBackingStorePixelRatio ||
+          ctx.backingStorePixelRatio ||
+          1;
+      return dpr / bsr;
+    })();
+
+    var createRetinaCanvas = function(w, h, ratio) {
+      if (!ratio) {
+        ratio = PIXEL_RATIO;
+      }
+      var can = document.createElement("canvas");
+      can.width = w * ratio;
+      can.height = h * ratio;
+      can.style.width = w + "px";
+      can.style.height = h + "px";
+      can.getContext("2d").setTransform(ratio, 0, 0, ratio, 0, 0);
+      return can;
+    };
+
+    function calcSize(text) {
+        var bitmap = createRetinaCanvas(512, 512);
+        var ctx = bitmap.getContext("2d", { antialias: true });
+        ctx.font = "100px aAtmospheric";
+        var metrics = ctx.measureText( text );
+        
+        return metrics.width
+    }
+
+    var width = calcSize(text);
+    var bitmap = createRetinaCanvas(width, width);
+    var ctx = bitmap.getContext("2d", { antialias: true });
+    ctx.font = "100px aAtmospheric";
+    var text = name;
+
+    ctx.beginPath();
+    ctx.textAlign = "center";
+    ctx.fillStyle = "rgba(255,255,255,0.8)";
+    ctx.fillText( text, width/2, width/2);
+
+    var texture = new THREE.Texture(bitmap);
+    texture.needsUpdate = true;
+    var spriteMaterial = new THREE.SpriteMaterial({
+      map: texture,
+      color: 0xffffff,
+      alphaTest: 0.1,
+      sizeAttenuation: false,
+      transparent: true,
+      depthTest: false
+    });
+
+    var sprite = new THREE.Sprite(spriteMaterial);
+    sprite.scale.set(0.2, 0.2, 1);
+    sprite.position.set(0, radius+0.1, 0);
+    sprite.renderOrder = 100;
+
+    return sprite
 }
 
 function createRing(data) {
