@@ -119,7 +119,7 @@ function core_init() {
     // 
     // Target sprite
     var spriteMap = new THREE.TextureLoader().load( "./materials/target.svg" );
-    var spriteMaterial = new THREE.SpriteMaterial( { map: spriteMap } );
+    var spriteMaterial = new THREE.SpriteMaterial( { map: spriteMap, depthTest: false } );
     var sprite = new THREE.Sprite( spriteMaterial );
 
     var raycaster = new THREE.Raycaster();
