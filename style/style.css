@@ -1,3 +1,10 @@
+:root {
+    --main-text-color: rgba(249, 247, 247, 1);
+    --secondary-text-color: rgba(219, 226, 239,1);
+    --background-color: rgba(63, 114, 175, 0.35);
+    --third-color: rgba(17, 45, 78, 1)
+}
+
 @font-face {
     font-family: aAtmospheric;
     src: url(aAtmospheric.ttf);
@@ -7,7 +14,47 @@ body { margin: 0;}
 
 canvas { width: 100%; height: 100%;}
 
+p,span{
+    color: var(--main-text-color);
+}
+
 #userInterface{
     position: absolute;
     font-family: aAtmospheric;
 }
+
+#system-name{
+    font-size: 30px;
+    margin: 0;
+}
+#corvus-name{
+    font-size: 15px;
+    font-style: italic;
+    color: var(--secondary-text-color);
+}
+
+
+#left-sidebar{
+    width: 470px;
+    height: 100vh;
+    background-color: var(--background-color);
+}
+
+.grid-container-header {
+    display: grid;
+    grid-template-columns: 130px auto;
+    grid-template-rows: 130px;
+    gap: 10px;
+    grid-template-areas: "img system-name";
+}
+  
+.system-name { 
+    grid-area: system-name; 
+    margin: auto 0; 
+}
+#description { 
+    grid-area: description;
+    color: var(--secondary-text-color);
+    font-family: monospace; 
+}
+.img { grid-area: img; }
