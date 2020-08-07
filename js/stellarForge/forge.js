@@ -6,6 +6,7 @@ import {Ring} from './Ring.js';
 
 var stellarObjects = [];
 let system = new THREE.Object3D();
+let systemData = null;
 
 function createSatelite(planet, system, anchor = 0 ) {
     
@@ -78,6 +79,7 @@ function createSphere(data, type = 'satelite') {
 
 function drawNameSprite(name = '', radius) {
 
+    var text = name;
     var PIXEL_RATIO = (function() {
       var ctx = document.createElement("canvas").getContext("2d"),
         dpr = window.devicePixelRatio || 1,
@@ -105,7 +107,7 @@ function drawNameSprite(name = '', radius) {
     };
 
     function calcSize(text) {
-        var bitmap = createRetinaCanvas(512, 512);
+        var bitmap = createRetinaCanvas(1024, 1024);
         var ctx = bitmap.getContext("2d", { antialias: true });
         ctx.font = "100px aAtmospheric";
         var metrics = ctx.measureText( text );
@@ -117,7 +119,6 @@ function drawNameSprite(name = '', radius) {
     var bitmap = createRetinaCanvas(width, width);
     var ctx = bitmap.getContext("2d", { antialias: true });
     ctx.font = "100px aAtmospheric";
-    var text = name;
 
     ctx.beginPath();
     ctx.textAlign = "center";
@@ -181,22 +182,21 @@ function createOrbit(data) {
 
 var stellarForge = function(planetarySystem) {
         
-    let data = planetarySystem.system;
+    systemData = planetarySystem.system;
     // data.position
 
     system.position.copy(planetarySystem.position);
 
-    let star = createSphere( data.star, data.star.type );
+    let star = createSphere( systemData.star, systemData.star.type );
     
-    data.star.addMesh(star);
+    systemData.star.addMesh(star);
 
     system.add(star);
 
-    for (const key in data.planets) {
-        let planet = data.planets[key];
+    for (const key in systemData.planets) {
+        let planet = systemData.planets[key];
             
         createSatelite(planet, system);
-
     }
 
     return system;
