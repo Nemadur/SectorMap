@@ -1,5 +1,5 @@
 class StellarBody {
-    constructor(name, radius, type, color, rotation, tags, skew, texture = null){
+    constructor(name, radius, type, color, rotation, tags, skew, texture = null, atmosphere = null){
         this.name = name;
         this.type = type;
         this.radius = radius;
@@ -10,7 +10,7 @@ class StellarBody {
         this.tags = tags;
         this.mesh = null;
         this.orbit = null;
-        this.atmosphere = null;
+        this.atmosphere = atmosphere;
     };
 
     addMesh(mesh){
@@ -21,9 +21,6 @@ class StellarBody {
         this.orbit = orbit;
     };
 
-    addAtmosphere(atmosphere){
-        this.atmosphere = atmosphere;
-    };
 }
 
 export { StellarBody };

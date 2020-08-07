@@ -37,7 +37,7 @@ p,span{
 #left-sidebar{
     width: 470px;
     height: 100vh;
-    background-color: var(--background-color);
+    /* background-color: var(--background-color); */
 }
 
 .grid-container-header {

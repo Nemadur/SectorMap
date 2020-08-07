@@ -9,7 +9,9 @@ class Star extends StellarBody{
             data.color, 
             data.rotation, 
             data.tags,
-            data.skew
+            data.skew,
+            data.texture,
+            data.atmosphere
             );
     }
 }
