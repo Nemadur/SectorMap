@@ -1,8 +1,8 @@
-import {SolarSystem, Planet, Star, Ring} from "../js/corvus.js";
+import {StarSystem, Planet, Star, Ring} from "../js/stellarForge/forge.js";
 
 class PlanetarySystem{
     constructor(position = new THREE.Vector3(0,0,0) ){
-        this.system = new SolarSystem('Solar');
+        this.system = new StarSystem('Solar');
         this.system.star = new Star({
             name: 'sun', 
             radius: 4, 
@@ -27,7 +27,8 @@ class PlanetarySystem{
                 orbitSkew: 0, 
                 skew: 0, 
                 tags: ['earthlike', 'test'], 
-                satelite:[]
+                satelite:[],
+                texture: "volcanic_1"
             }),
             new Planet({
                 name: 'venus',
@@ -64,7 +65,8 @@ class PlanetarySystem{
                         tags: ['test'], 
                         satelite: [] 
                     })
-                ]
+                ],
+                texture: "volcanic_1"
             }),
             new Planet({
                 name: 'mars',

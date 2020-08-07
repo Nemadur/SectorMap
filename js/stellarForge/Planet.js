@@ -9,7 +9,8 @@ class Planet extends StellarBody {
             data.color, 
             data.rotation, 
             data.tags,
-            data.skew
+            data.skew,
+            data.texture
             );
         
         this.orbitRotation = data.orbitRotation;

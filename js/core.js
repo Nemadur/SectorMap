@@ -2,8 +2,6 @@ import { RGBELoader } from './RGBELoader.js';
 import { PlanetarySystem } from '../systems/solarSystem.js';
 import { stellarForge, stellarForgeObjects } from './stellarForge/forge.js';
 
-$(document).ready(core_init);
-
 let stellarObjects = [];
 let selectedObject = null;
 var temp = new THREE.Vector3;
@@ -266,3 +264,5 @@ function core_init() {
 
     loop();
 }
+
+window.onload = core_init();

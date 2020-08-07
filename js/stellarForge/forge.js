@@ -38,12 +38,20 @@ function createSphere(data, type = 'satelite') {
 
     var sphereGeometry = new THREE.SphereGeometry( data.radius, planes, planes );
 
+    var texture, sphereMaterial;
+
     if (type != 'satelite') {
-        var texture = new THREE.TextureLoader().load('materials/star.jpg');
-        var sphereMaterial = new THREE.MeshBasicMaterial( { map: texture, transparent: true } );
+        texture = new THREE.TextureLoader().load('materials/star.jpg');
+        sphereMaterial = new THREE.MeshBasicMaterial( { map: texture, transparent: true } );
         
     } else {
-        var sphereMaterial = new THREE.MeshPhongMaterial( {color: data.color, wireframe: false, flatShading: false} );
+        sphereMaterial = new THREE.MeshPhongMaterial( {color: data.color, wireframe: false, flatShading: false} );
+    }
+    
+    if (data.texture) {
+        let textureDir = `materials/${data.texture}.png`;
+        texture = new THREE.TextureLoader().load(textureDir);
+        sphereMaterial = new THREE.MeshPhongMaterial( {map: texture, wireframe: false, flatShading: false} );
     }
 
     var sphere = new THREE.Mesh( sphereGeometry, sphereMaterial );
@@ -194,4 +202,4 @@ var stellarForge = function(planetarySystem) {
     return system;
 };
 
-export {stellarForge, stellarObjects as stellarForgeObjects};
+export {stellarForge, stellarObjects as stellarForgeObjects, StarSystem, StellarBody, Star, Planet, Ring};
