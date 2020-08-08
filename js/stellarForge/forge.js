@@ -43,7 +43,7 @@ function createSphere(data, type = 'satelite') {
     let textureDir = '';
 
     if (type != 'star') {
-        textureDir = `materials/${systemData.name}/${data.texture}.png`;
+        textureDir = `materials/${systemData.name.toLowerCase()}/${data.texture}.png`;
         texture = new THREE.TextureLoader().load(textureDir);
         sphereMaterial = new THREE.MeshPhongMaterial( {map: texture, wireframe: false, flatShading: false} );
     
@@ -190,7 +190,7 @@ function createClouds(data) {
     var planes = 25;
     var sphereGeometry = new THREE.SphereGeometry( data.radius+0.01, planes, planes );
 
-    let textureDir = `materials/${systemData.name}/${data.texture}_clouds.png`;
+    let textureDir = `materials/${systemData.name.toLowerCase()}/${data.texture}_clouds.png`;
     let texture = new THREE.TextureLoader().load(textureDir);
     let sphereMaterial = new THREE.MeshPhongMaterial( {map: texture, wireframe: false, flatShading: false, transparent: true} );
 
