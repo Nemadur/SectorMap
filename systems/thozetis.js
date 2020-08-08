@@ -56,6 +56,7 @@ class PlanetarySystem{
                 orbitSkew: 0, 
                 skew: 0.15, 
                 texture: 'thozetis_3',
+                atmosphere: {color: 0xccffcc, clouds: true}, 
                 tags: ['oceanic', 'invasive', 'radioactive'], 
                 satelites: [
                     new Planet({ 

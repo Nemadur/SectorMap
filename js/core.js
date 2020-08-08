@@ -1,6 +1,6 @@
 import { RGBELoader } from './RGBELoader.js';
-import { PlanetarySystem } from '../systems/solarSystem.js';
-import { stellarForge, stellarForgeObjects } from './stellarForge/forge.js';
+import { PlanetarySystem } from '../systems/thozetis.js';
+import { stellarForge, stellarForgeObjects, atmospheres } from './stellarForge/forge.js';
 
 let stellarObjects = [];
 let selectedObject = null;
@@ -8,7 +8,7 @@ var temp = new THREE.Vector3;
 let focusObject = null;
 
 function core_init() {
-    
+
     var scene = new THREE.Scene();
     var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100000);
     var renderer = new THREE.WebGLRenderer();
@@ -46,17 +46,6 @@ function core_init() {
     camera.position.set(0,10,20);
     camera.lookAt(0,0,0);
 
-
-    // 
-    // 
-    // add Light to the scene
-    var light = new THREE.AmbientLight( 0x404040 ); // soft white light
-    var starLight = new THREE.PointLight( 0xffffff, 1 );
-    
-    scene.add( light );
-    scene.add( starLight );
-
-
     // 
     // 
     // Random placement
@@ -64,18 +53,17 @@ function core_init() {
         ob[0].rotation.y +=Math.random() * (Math.PI*2);
     })
 
-
-    // 
-    // 
-    // GLOW
-    var sphereGeom = new THREE.SphereGeometry(4, 32, 16);
-	var customMaterial = new THREE.ShaderMaterial( 
+    for (let index = 0; index < atmospheres.length; index++) {
+        const atmos = atmospheres[index];
+        
+        var atmGeom = new THREE.SphereGeometry(atmos.radius, 32, 16);
+        var atmMaterial = new THREE.ShaderMaterial( 
         {
             uniforms: 
             { 
                 "c":   { type: "f", value: 0.4 },
                 "p":   { type: "f", value: 3 },
-                glowColor: { type: "c", value: new THREE.Color(0xffff00) },
+                glowColor: { type: "c", value: new THREE.Color(atmos.color) },
                 viewVector: { type: "v3", value: camera.position }
             },
             vertexShader:   document.getElementById( 'vertexShader'   ).textContent,
@@ -83,34 +71,14 @@ function core_init() {
             side: THREE.BackSide,
             blending: THREE.AdditiveBlending,
             transparent: true
-        }   );
-            
-    var moonGlow = new THREE.Mesh( sphereGeom.clone(), customMaterial.clone() );
-    moonGlow.position.set(0,0,0)
-    moonGlow.scale.multiplyScalar(1.2);
-    scene.add( moonGlow );
+        });
+        var glow = new THREE.Mesh( atmGeom.clone(), atmMaterial.clone() );
+        glow.position.set(0,0,0)
+        glow.scale.multiplyScalar(1.2);
+        atmospheres[index].glow = glow;
 
-    var sphereGeom = new THREE.SphereGeometry(1, 25, 16);
-	var customMaterial = new THREE.ShaderMaterial( 
-        {
-            uniforms: 
-            { 
-                "c":   { type: "f", value: 0.4 },
-                "p":   { type: "f", value: 3 },
-                glowColor: { type: "c", value: new THREE.Color(0xa0a0ff) },
-                viewVector: { type: "v3", value: camera.position }
-            },
-            vertexShader:   document.getElementById( 'vertexShader'   ).textContent,
-            fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
-            side: THREE.BackSide,
-            blending: THREE.AdditiveBlending,
-            transparent: true
-        }   );
-            
-    var earthGlow = new THREE.Mesh( sphereGeom.clone(), customMaterial.clone() );
-    earthGlow.position.set(0,0,0)
-    earthGlow.scale.multiplyScalar(1.2);
-    scene.add( earthGlow );
+        scene.add( glow );
+    }
 
 
     // 
@@ -154,7 +122,6 @@ function core_init() {
         render();
     } );
 
-
     // 
     // 
     // U P D A T E
@@ -164,12 +131,22 @@ function core_init() {
     let interval = 1 / 30;
     let scalar = -0.1;
     let scalarStep = 0.01
+    let speedFactor = 0.3;
 
     var update = function(){
 
+        for (let atm = 0; atm < atmospheres.length; atm++) {
+            const atmosphere = atmospheres[atm];
+            let vector3 = new THREE.Vector3();
+            atmosphere.object.getWorldPosition(vector3);
+            atmosphere.glow.position.copy(vector3);
+            atmosphere.glow.material.uniforms.viewVector.value = 
+                new THREE.Vector3().subVectors( camera.position, atmosphere.glow.position );
+        }
+
         for (let index = 0; index < stellarObjects.length; index++) {
             const body = stellarObjects[index];
-            body[0].rotation.y +=body[1]
+            body[0].rotation.y +=body[1] * speedFactor
         }
 
         if (scalar > 0.1) {
@@ -179,21 +156,10 @@ function core_init() {
             scalarStep = 0.01;
         }
 
-        moonGlow.material.uniforms.viewVector.value = 
-        new THREE.Vector3().subVectors( camera.position, moonGlow.position );
-        
-        var v3 = new THREE.Vector3();
-        stellarObjects[5][0].getWorldPosition(v3)
-        earthGlow.position.copy( v3) ;
-        earthGlow.material.uniforms.viewVector.value = 
-        new THREE.Vector3().subVectors( camera.position, earthGlow.position );
-
-
         scalar += scalarStep
 
         sprite.scale.x += scalar;
         sprite.scale.y += scalar;
-
     };
 
     function render() {

@@ -5,6 +5,7 @@ import {Planet} from './Planet.js';
 import {Ring} from './Ring.js';
 
 var stellarObjects = [];
+var atmospheres = [];
 let system = new THREE.Object3D();
 let systemData = null;
 
@@ -36,23 +37,20 @@ function createSatelite(planet, system, anchor = 0 ) {
 function createSphere(data, type = 'satelite') {
     
     var planes = 25;
-
     var sphereGeometry = new THREE.SphereGeometry( data.radius, planes, planes );
-
     var texture, sphereMaterial;
 
-    if (type != 'satelite') {
-        texture = new THREE.TextureLoader().load('materials/star.jpg');
-        sphereMaterial = new THREE.MeshBasicMaterial( { map: texture, transparent: true } );
-        
-    } else {
-        sphereMaterial = new THREE.MeshPhongMaterial( {color: data.color, wireframe: false, flatShading: false} );
-    }
-    
-    if (data.texture) {
-        let textureDir = `materials/${data.texture}.png`;
+    let textureDir = '';
+
+    if (type != 'star') {
+        textureDir = `materials/${systemData.name}/${data.texture}.png`;
         texture = new THREE.TextureLoader().load(textureDir);
         sphereMaterial = new THREE.MeshPhongMaterial( {map: texture, wireframe: false, flatShading: false} );
+    
+    } else {
+        textureDir = `materials/${data.texture}.png`;
+        texture = new THREE.TextureLoader().load(textureDir);
+        sphereMaterial = new THREE.MeshBasicMaterial( {map: texture, wireframe: false, flatShading: false} );
     }
 
     var sphere = new THREE.Mesh( sphereGeometry, sphereMaterial );
@@ -69,6 +67,13 @@ function createSphere(data, type = 'satelite') {
 
     if (data.ring) {
         sphere.add(createRing(data.ring) )
+    }
+
+    if (data.atmosphere) {
+        atmospheres.push({radius: data.radius, color: data.atmosphere.color, object: sphere})
+        if (data.atmosphere.clouds) {
+            sphere.add(createClouds(data))
+        }    
     }
 
     var sprite = drawNameSprite(data.name, data.radius);
@@ -180,6 +185,20 @@ function createOrbit(data) {
     return orbit;
 }
 
+function createClouds(data) {
+        
+    var planes = 25;
+    var sphereGeometry = new THREE.SphereGeometry( data.radius+0.01, planes, planes );
+
+    let textureDir = `materials/${systemData.name}/${data.texture}_clouds.png`;
+    let texture = new THREE.TextureLoader().load(textureDir);
+    let sphereMaterial = new THREE.MeshPhongMaterial( {map: texture, wireframe: false, flatShading: false, transparent: true} );
+
+    var clouds = new THREE.Mesh( sphereGeometry, sphereMaterial );
+
+    return clouds;
+}
+
 var stellarForge = function(planetarySystem) {
         
     systemData = planetarySystem.system;
@@ -199,7 +218,17 @@ var stellarForge = function(planetarySystem) {
         createSatelite(planet, system);
     }
 
+    // 
+    // 
+    // add Light to the scene
+    var light = new THREE.AmbientLight( 0x404040 ); // soft white light
+    var starLight = new THREE.PointLight( planetarySystem.light, 1.2 );
+    
+    system.add( light );
+    system.add( starLight );
+
     return system;
 };
 
-export {stellarForge, stellarObjects as stellarForgeObjects, StarSystem, StellarBody, Star, Planet, Ring};
+
+export {stellarForge, stellarObjects as stellarForgeObjects, atmospheres, StarSystem, StellarBody, Star, Planet, Ring};
