@@ -56,5 +56,6 @@ p,span{
     grid-area: description;
     color: var(--secondary-text-color);
     font-family: monospace; 
+    text-align: justify;
 }
 .img { grid-area: img; }

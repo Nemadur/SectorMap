@@ -15,6 +15,8 @@ class PlanetarySystem{
         this.system.planets = this.getPlanets();
         this.position = position;
         this.light = 0xff6666;
+        this.description = 'System Thozetis jest radioaktywnym zapomnianym przez świat miejscem.';
+        this.mapCoordinates = '0 2 2';
     }
 
     getPlanets() {

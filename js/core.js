@@ -41,10 +41,17 @@ function core_init() {
     // 
     // 
     // stellarForge
-    scene.add(stellarForge(new PlanetarySystem(new THREE.Vector3(0, 0,0))));
+    let system = new PlanetarySystem(new THREE.Vector3(0, 0,0));
+    scene.add(stellarForge(system));
     stellarObjects = stellarForgeObjects;
     camera.position.set(0,10,20);
     camera.lookAt(0,0,0);
+
+    // 
+    // 
+    // UI 
+    document.getElementById('system-name').innerHTML = system.system.name;
+    document.getElementById('description').innerHTML = system.description;
 
     // 
     // 
