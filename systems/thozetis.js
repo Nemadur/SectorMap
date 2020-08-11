@@ -106,4 +106,4 @@ class PlanetarySystem{
     }
 }
 
-export { PlanetarySystem };
+export { PlanetarySystem as Thozetis };

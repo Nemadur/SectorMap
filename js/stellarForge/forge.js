@@ -221,7 +221,7 @@ var stellarForge = function(planetarySystem) {
     // 
     // 
     // add Light to the scene
-    var light = new THREE.AmbientLight( 0x404040 ); // soft white light
+    var light = new THREE.AmbientLight( 0x606060 ); // soft white light
     var starLight = new THREE.PointLight( planetarySystem.light, 1.2 );
     
     system.add( light );

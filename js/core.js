@@ -1,5 +1,5 @@
 import { RGBELoader } from './RGBELoader.js';
-import { PlanetarySystem } from '../systems/thozetis.js';
+import * as systems from '../systems/systemCentral.js';
 import { stellarForge, stellarForgeObjects, atmospheres } from './stellarForge/forge.js';
 
 let stellarObjects = [];
@@ -41,7 +41,9 @@ function core_init() {
     // 
     // 
     // stellarForge
-    let system = new PlanetarySystem(new THREE.Vector3(0, 0,0));
+    let targetSystem = systems.Thozetis;
+
+    let system = new targetSystem(new THREE.Vector3(0, 0,0));
     scene.add(stellarForge(system));
     stellarObjects = stellarForgeObjects;
     camera.position.set(0,10,20);
@@ -180,7 +182,7 @@ function core_init() {
 
         for (const objects of intersects) {
 
-            if (objects.object.type != 'Mesh') {
+            if (objects.object.type != 'Mesh' || !objects.object.children.length ) {
                 continue
             }
 
