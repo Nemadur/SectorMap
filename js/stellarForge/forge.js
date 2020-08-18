@@ -201,9 +201,10 @@ function createClouds(data) {
 
 var stellarForge = function(planetarySystem) {
         
-    systemData = planetarySystem.system;
-    // data.position
+    stellarObjects = [];
+    atmospheres = [];
 
+    systemData = planetarySystem.system;
     system.position.copy(planetarySystem.position);
 
     let star = createSphere( systemData.star, systemData.star.type );
@@ -231,4 +232,4 @@ var stellarForge = function(planetarySystem) {
 };
 
 
-export {stellarForge, stellarObjects as stellarForgeObjects, atmospheres, StarSystem, StellarBody, Star, Planet, Ring};
+export {stellarForge, stellarObjects as stellarForgeObjects, atmospheres as stellarForgeAtmospheres, StarSystem, StellarBody, Star, Planet, Ring};

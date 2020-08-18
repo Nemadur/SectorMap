@@ -1,18 +1,20 @@
 import { RGBELoader } from './RGBELoader.js';
 import * as systems from '../systems/systemCentral.js';
-import { stellarForge, stellarForgeObjects, atmospheres } from './stellarForge/forge.js';
+import { stellarForge, stellarForgeObjects, stellarForgeAtmospheres } from './stellarForge/forge.js';
+
+var temp = new THREE.Vector3;
+var scene = new THREE.Scene();
+var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100000);
 
 let stellarObjects = [];
+let atmospheres = [];
 let selectedObject = null;
-var temp = new THREE.Vector3;
 let focusObject = null;
+let system = null;
+var renderer = new THREE.WebGLRenderer();
+var controls = new THREE.OrbitControls( camera, renderer.domElement);
 
 function core_init() {
-
-    var scene = new THREE.Scene();
-    var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100000);
-    var renderer = new THREE.WebGLRenderer();
-    var controls = new THREE.OrbitControls( camera, renderer.domElement);
 
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild( renderer.domElement );
@@ -41,11 +43,7 @@ function core_init() {
     // 
     // 
     // stellarForge
-    let targetSystem = systems.Thozetis;
-
-    let system = new targetSystem(new THREE.Vector3(0, 0,0));
-    scene.add(stellarForge(system));
-    stellarObjects = stellarForgeObjects;
+    loadSystem();
     camera.position.set(0,10,20);
     camera.lookAt(0,0,0);
 
@@ -61,34 +59,6 @@ function core_init() {
     stellarObjects.forEach(ob => {
         ob[0].rotation.y +=Math.random() * (Math.PI*2);
     })
-
-    for (let index = 0; index < atmospheres.length; index++) {
-        const atmos = atmospheres[index];
-        
-        var atmGeom = new THREE.SphereGeometry(atmos.radius, 32, 16);
-        var atmMaterial = new THREE.ShaderMaterial( 
-        {
-            uniforms: 
-            { 
-                "c":   { type: "f", value: 0.4 },
-                "p":   { type: "f", value: 3 },
-                glowColor: { type: "c", value: new THREE.Color(atmos.color) },
-                viewVector: { type: "v3", value: camera.position }
-            },
-            vertexShader:   document.getElementById( 'vertexShader'   ).textContent,
-            fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
-            side: THREE.BackSide,
-            blending: THREE.AdditiveBlending,
-            transparent: true
-        });
-        var glow = new THREE.Mesh( atmGeom.clone(), atmMaterial.clone() );
-        glow.position.set(0,0,0)
-        glow.scale.multiplyScalar(1.2);
-        atmospheres[index].glow = glow;
-
-        scene.add( glow );
-    }
-
 
     // 
     // 
@@ -241,3 +211,82 @@ function core_init() {
 }
 
 window.onload = core_init();
+
+function abortChild(object) {
+
+    while (object.children.length > 0) {
+
+        let parent = object.children[0];
+        while (parent.children.length > 0) {
+            abortChild(parent.children[0]);
+            object.remove(object.children[0])
+        }
+        
+    }
+    
+}
+
+function clearCosmos() {
+    if (scene.children[0]) {
+        // abortChild(scene.children[0]);
+    }
+    while(scene.children.length > 0){ 
+        scene.children[0].dispose;
+        scene.remove(scene.children[0]); 
+    }
+
+    stellarObjects = [];
+    atmospheres = [];
+    selectedObject = null;
+    focusObject = null;
+}
+
+function loadSystem(systemName) {
+
+    clearCosmos();
+    debugger
+
+    let targetSystem = systems.Thozetis;
+
+    system = new targetSystem(new THREE.Vector3(0, 0,0));
+    scene.add(stellarForge(system));
+    stellarObjects = stellarForgeObjects;
+    atmospheres = stellarForgeAtmospheres;
+
+    createAtmosphere();
+}
+
+function createAtmosphere() {
+    for (let index = 0; index < atmospheres.length; index++) {
+        const atmos = atmospheres[index];
+        
+        var atmGeom = new THREE.SphereGeometry(atmos.radius, 32, 16);
+        var atmMaterial = new THREE.ShaderMaterial( 
+        {
+            uniforms: 
+            { 
+                "c":   { type: "f", value: 0.4 },
+                "p":   { type: "f", value: 3 },
+                glowColor: { type: "c", value: new THREE.Color(atmos.color) },
+                viewVector: { type: "v3", value: camera.position }
+            },
+            vertexShader:   document.getElementById( 'vertexShader'   ).textContent,
+            fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
+            side: THREE.BackSide,
+            blending: THREE.AdditiveBlending,
+            transparent: true
+        });
+        var glow = new THREE.Mesh( atmGeom.clone(), atmMaterial.clone() );
+        glow.position.set(0,0,0)
+        glow.scale.multiplyScalar(1.2);
+        atmospheres[index].glow = glow;
+
+        scene.add( glow );
+    }
+}
+
+let changeBtn = document.getElementById('changeBtn');
+
+changeBtn.onclick = function test(params) {
+    loadSystem('neoThozetis');
+};
