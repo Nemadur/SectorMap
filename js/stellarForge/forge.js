@@ -9,6 +9,31 @@ var atmospheres = [];
 let system = new THREE.Object3D();
 let systemData = null;
 
+class ResourceTracker {
+    constructor() {
+      this.resources = new Set();
+    }
+    track(resource) {
+      if (resource.dispose) {
+        this.resources.add(resource);
+      }
+      return resource;
+    }
+    untrack(resource) {
+      this.resources.delete(resource);
+    }
+    dispose() {
+      for (const resource of this.resources) {
+        resource.dispose();
+      }
+      this.resources.clear();
+    }
+}
+
+const resTracker = new ResourceTracker();
+const track = resTracker.track.bind(resTracker);
+const loader = new THREE.TextureLoader();
+
 function createSatelite(planet, system, anchor = 0 ) {
     
     let orbit = createOrbit(planet);
@@ -37,23 +62,29 @@ function createSatelite(planet, system, anchor = 0 ) {
 function createSphere(data, type = 'satelite') {
     
     var planes = 25;
-    var sphereGeometry = new THREE.SphereGeometry( data.radius, planes, planes );
+    var sphereGeometry = track(new THREE.SphereGeometry( data.radius, planes, planes ));
     var texture, sphereMaterial;
 
     let textureDir = '';
 
     if (type != 'star') {
         textureDir = `materials/${systemData.name.toLowerCase()}/${data.texture}.png`;
-        texture = new THREE.TextureLoader().load(textureDir);
-        sphereMaterial = new THREE.MeshPhongMaterial( {map: texture, wireframe: false, flatShading: false} );
+        sphereMaterial = track(new THREE.MeshPhongMaterial({
+                map: track(loader.load(textureDir)), 
+                wireframe: false, 
+                flatShading: false
+            }));
     
     } else {
         textureDir = `materials/${data.texture}.png`;
-        texture = new THREE.TextureLoader().load(textureDir);
-        sphereMaterial = new THREE.MeshBasicMaterial( {map: texture, wireframe: false, flatShading: false} );
+        sphereMaterial = track(new THREE.MeshBasicMaterial({
+            map: track(loader.load(textureDir)), 
+            wireframe: false, 
+            flatShading: false
+        }));
     }
 
-    var sphere = new THREE.Mesh( sphereGeometry, sphereMaterial );
+    var sphere = track(new THREE.Mesh( sphereGeometry, sphereMaterial ));
 
     if (type == 'satelite') {
         sphere.position.set(data.orbitRadius,0,0);
@@ -130,18 +161,18 @@ function drawNameSprite(name = '', radius) {
     ctx.fillStyle = "rgba(255,255,255,0.8)";
     ctx.fillText( text, width/2, width/2);
 
-    var texture = new THREE.Texture(bitmap);
+    var texture = track(new THREE.Texture(bitmap));
     texture.needsUpdate = true;
-    var spriteMaterial = new THREE.SpriteMaterial({
+    var spriteMaterial = track(new THREE.SpriteMaterial({
       map: texture,
       color: 0xffffff,
       alphaTest: 0.1,
       sizeAttenuation: false,
       transparent: true,
       depthTest: false
-    });
+    }));
 
-    var sprite = new THREE.Sprite(spriteMaterial);
+    var sprite = track(new THREE.Sprite(spriteMaterial));
     sprite.scale.set(0.2, 0.2, 1);
     sprite.position.set(0, radius+0.1, 0);
     sprite.renderOrder = 100;
@@ -153,10 +184,12 @@ function createRing(data) {
 
     var radius = data.radius + data.width/2;
 
-    var geometry = new THREE.TorusGeometry( radius, data.width/2 , 2, 30 );
-    var texture = new THREE.TextureLoader().load('materials/ring.png');
-    var material = new THREE.MeshBasicMaterial( { map: texture, transparent: true } );
-    var torus = new THREE.Mesh( geometry, material );
+    var geometry = track(new THREE.TorusGeometry( radius, data.width/2 , 2, 30 ));
+    var material = track(new THREE.MeshBasicMaterial({ 
+        map: track(loader.load('materials/ring.png')), 
+        transparent: true 
+    }));
+    var torus = track(new THREE.Mesh( geometry, material ));
     torus.rotation.x = Math.PI/2
 
     return torus
@@ -164,19 +197,19 @@ function createRing(data) {
 
 function createOrbit(data) {
     
-    var orbit = new THREE.Object3D();
-    let orbitPath = new THREE.EllipseCurve(
+    var orbit = track(new THREE.Object3D());
+    let orbitPath = track(new THREE.EllipseCurve(
         0,  0,            // ax, aY
         data.orbitRadius, data.orbitRadius,           // xRadius, yRadius
         -0.3, 0.6*Math.PI,  // aStartAngle, aEndAngle
         false,            // aClockwise
         0.3                 // aRotation
-      );
+      ));
     let points = orbitPath.getPoints( 50 );
-    let orbitGeometry = new THREE.BufferGeometry().setFromPoints( points );
-    let material = new THREE.LineBasicMaterial( { color : 0xffffff } );
+    let orbitGeometry = track(new THREE.BufferGeometry().setFromPoints( points ));
+    let material = track(new THREE.LineBasicMaterial( { color : 0xffffff } ));
 
-    let orbitLine = new THREE.Line( orbitGeometry, material );
+    let orbitLine = track(new THREE.Line( orbitGeometry, material ));
     orbitLine.rotation.x = Math.PI/2;
 
     orbit.add(orbitLine);
@@ -188,13 +221,17 @@ function createOrbit(data) {
 function createClouds(data) {
         
     var planes = 25;
-    var sphereGeometry = new THREE.SphereGeometry( data.radius+0.01, planes, planes );
+    var sphereGeometry = track(new THREE.SphereGeometry( data.radius+0.01, planes, planes ));
 
     let textureDir = `materials/${systemData.name.toLowerCase()}/${data.texture}_clouds.png`;
-    let texture = new THREE.TextureLoader().load(textureDir);
-    let sphereMaterial = new THREE.MeshPhongMaterial( {map: texture, wireframe: false, flatShading: false, transparent: true} );
+    let sphereMaterial = track(new THREE.MeshPhongMaterial({
+        map: track(loader.load(textureDir)), 
+        wireframe: false, 
+        flatShading: false, 
+        transparent: true
+    }));
 
-    var clouds = new THREE.Mesh( sphereGeometry, sphereMaterial );
+    var clouds = track(new THREE.Mesh( sphereGeometry, sphereMaterial ));
 
     return clouds;
 }
@@ -222,8 +259,8 @@ var stellarForge = function(planetarySystem) {
     // 
     // 
     // add Light to the scene
-    var light = new THREE.AmbientLight( 0x606060 ); // soft white light
-    var starLight = new THREE.PointLight( planetarySystem.light, 1.2 );
+    var light = track(new THREE.AmbientLight( 0x606060 )); // soft white light
+    var starLight = track(new THREE.PointLight( planetarySystem.light, 1.2 ));
     
     system.add( light );
     system.add( starLight );
@@ -231,5 +268,4 @@ var stellarForge = function(planetarySystem) {
     return system;
 };
 
-
-export {stellarForge, stellarObjects as stellarForgeObjects, atmospheres as stellarForgeAtmospheres, StarSystem, StellarBody, Star, Planet, Ring};
+export {resTracker, stellarForge, stellarObjects as stellarForgeObjects, atmospheres as stellarForgeAtmospheres, StarSystem, StellarBody, Star, Planet, Ring};
