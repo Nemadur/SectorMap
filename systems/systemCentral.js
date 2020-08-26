@@ -1,7 +1,17 @@
-import { Thozetis } from '../systems/thozetis.js';
-import { NeoThozetis } from '../systems/neoThozetis.js';
+import { thozetis } from '../systems/thozetis.js';
+import { neothozetis } from '../systems/neoThozetis.js';
+import { testsystem } from '../systems/testSystem.js';
+
+const content = [
+    {name: 'Thozetis'},
+    {name: 'NeoThozetis'},
+    {name: 'Test System'}
+]
+
 
 export {
-    Thozetis,
-    NeoThozetis
+    content,
+    thozetis,
+    neothozetis,
+    testsystem
 };

@@ -6,9 +6,12 @@
         <script src='js/three.js'></script>
         <script src='js/OrbitControls.js'></script>
         <script src="js/anime.min.js"></script>
-        <link href="style/semantic.min.css" media="screen" rel="stylesheet" type="text/css">
-        <link href="style/icon.min.css" media="screen" rel="stylesheet" type="text/css">
         <link href="style/style.css" media="screen" rel="stylesheet" type="text/css">
+        
+        <!-- You MUST include jQuery before Fomantic -->
+        <script src="https://unpkg.com/jquery@3.3.1/dist/jquery.js"></script>
+        <link rel="stylesheet" type="text/css" href="https://unpkg.com/fomantic-ui@2.8.6/dist/semantic.min.css">
+        <script src="https://unpkg.com/fomantic-ui@2.8.6/dist/semantic.min.js"></script>
 
         <script type="module" src='./js/RGBELoader.js'></script>
 
@@ -55,13 +58,78 @@
                     <div class="system-name">
                         <p id="system-name">system name</p>
                         <p id="corvus-name">corvus sector</p>
+                        <p id="map-coordinates">2 2 2</p>
                     </div>
                 </div>
-                <div class="ui basic segment" id="description">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque non urna et tellus ultricies auctor. Ut vitae vehicula nulla. Donec ultrices sodales erat pellentesque commodo. Proin ultrices ante non tortor dictum aliquam. Aenean elementum convallis diam, eu condimentum orci. Sed vitae hendrerit leo. Curabitur in lorem massa. Morbi pulvinar at mi a auctor. Suspendisse eget gravida urna. Donec nec erat at ligula vehicula ullamcorper. Sed vitae nulla ut lacus consectetur hendrerit.
+
+
+                <div class="ui basic segments nav-panel">
+                    <div class="ui basic segment">               
+                        <i class="big route inverted icon"></i>      
+                        <span>Nawigacja</span>
+                    </div>
+
+                    <div class="ui basic segment">
+                        <div class="ui search inverted selection dropdown fluid" id="diacriticsexample">
+                            <input type="hidden" name="diacritics">
+                            <i class="dropdown icon"></i>
+                            <div class="default text">Wprowadź nazwę systemu</div>
+                            <div class="menu" id="dropDownItems">
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
-                <div class="ui button" id="changeBtn">Change system</div>
+                <div class="ui basic segments nav-panel">
+
+                    <div class="ui basic segment">               
+                        <i class="info big inverted icon"></i>   
+                        <span>Informacje o systemie</span>
+                    </div>
+
+                    <div class="ui basic segment" id="description">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque non urna et tellus ultricies auctor. Ut vitae vehicula nulla. Donec ultrices sodales erat pellentesque commodo. Proin ultrices ante non tortor dictum aliquam. Aenean elementum convallis diam, eu condimentum orci. Sed vitae hendrerit leo. Curabitur in lorem massa. Morbi pulvinar at mi a auctor. Suspendisse eget gravida urna. Donec nec erat at ligula vehicula ullamcorper. Sed vitae nulla ut lacus consectetur hendrerit.
+                    </div>
+
+                </div>
+
+                <div class="ui basic segments alert-panel">
+
+                    <div class="ui basic segment">               
+                        <i class="exclamation triangle big icon"></i>  
+                        Uwaga !
+                    </div>
+
+                    <div class="ui basic segment" id="alert-description">
+                        
+                        <div class="ui list">
+
+                            <a class="item">
+                                <i class="radiation large icon" alert></i>
+                                <div class="content">
+                                        <div class="header" alert style="text-transform: uppercase;">Zagrożenie promieniowaniem!</div>
+                                        <div class="description" alert>To jest opis zagrożenia, nie przebywaj tu za długo bo Cię usmaży :)</div>
+                                </div>
+                            </a>
+
+                            <a class="item">
+                                <i class="fist raised large icon" alert></i>
+                                <div class="content">
+                                        <div class="header" alert style="text-transform: uppercase;">Nielegalne działania zbrojne!</div>
+                                        <div class="description" alert>Potężni przeciwnicy, którzy ugną się jedynie przed Shock Damage</div>
+                                </div>
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+
 
             </div>
         

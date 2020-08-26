@@ -2,28 +2,28 @@ import {StarSystem, Planet, Star, Ring} from "../js/stellarForge/forge.js";
 
 class PlanetarySystem{
     constructor(position = new THREE.Vector3(0,0,0) ){
-        this.system = new StarSystem('NeoThozetis');
+        this.system = new StarSystem('Test System');
         this.system.star = new Star({
-            name: 'NeoThozetis', 
+            name: 'Test System', 
             radius: 8, 
             color: 0xff2222, 
             rotation: 0.001, 
             type: 'star',
             texture: 'redGiant',
-            atmosphere: {color: 0xffcccc} 
+            atmosphere: {color: 0xffffff} 
         });
         this.system.planets = this.getPlanets();
         this.position = position;
-        this.light = 0x006666;
-        this.description = 'Neo meta Thozetis';
-        this.mapCoordinates = 'X X X';
+        this.light = 0xffffff;
+        this.description = 'Neo meta Thozetis Test System ';
+        this.mapCoordinates = '1 A 5';
     }
 
     getPlanets() {
         
         return [
             new Planet({
-                name: 'NeoThozetis I', 
+                name: 'Test System I', 
                 radius: 0.2, 
                 color: 0xA06153, 
                 rotation: 0.001, 
@@ -36,7 +36,7 @@ class PlanetarySystem{
                 texture: "thozetis_1"
             }),
             new Planet({
-                name: 'NeoThozetis II', 
+                name: 'Test System II', 
                 radius: 0.3, 
                 color: 0xA06153, 
                 rotation: 0.01, 
@@ -49,7 +49,7 @@ class PlanetarySystem{
                 texture: "thozetis_2"
             }),
             new Planet({
-                name: 'NeoThozetis III', 
+                name: 'Test System III', 
                 radius: 1.2, 
                 color: 0x0000ff, 
                 rotation: 0.005, 
@@ -62,7 +62,7 @@ class PlanetarySystem{
                 tags: ['oceanic', 'invasive', 'radioactive'], 
                 satelites: [
                     new Planet({ 
-                        name: 'NeoThozetis III A',
+                        name: 'Test System III A',
                         radius: 0.1, 
                         color: 0xcccccc, 
                         rotation: 0.01, 
@@ -73,19 +73,6 @@ class PlanetarySystem{
                         tags: ['test'], 
                         texture: 'thozetis_3a',
                         satelite: [] 
-                    }),
-                    new Planet({ 
-                        name: 'NeoThozetis III B',
-                        radius: 0.15, 
-                        color: 0xcccccc, 
-                        rotation: 0.01, 
-                        orbitRotation: 0.015, 
-                        orbitRadius: 4.5, 
-                        orbitSkew: 0.3, 
-                        skew: 0, 
-                        tags: ['test'], 
-                        texture: 'thozetis_3b',
-                        satelite: [] 
                     })
                 ]
             })
@@ -93,4 +80,4 @@ class PlanetarySystem{
     }
 }
 
-export { PlanetarySystem as neothozetis };
+export { PlanetarySystem as testsystem };

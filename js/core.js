@@ -1,5 +1,6 @@
 import { RGBELoader } from './RGBELoader.js';
 import * as systems from '../systems/systemCentral.js';
+import { content } from '../systems/systemCentral.js';
 import { resTracker, stellarForge, stellarForgeObjects, stellarForgeAtmospheres } from './stellarForge/forge.js';
 
 var temp = new THREE.Vector3;
@@ -38,18 +39,13 @@ window.addEventListener('dblclick', function () {
 
 });
 
-// 
-// 
-// stellarForge
-loadSystem('Thozetis');
-camera.position.set(0,10,20);
-camera.lookAt(0,0,0);
+function updateInformation() {
+    
+    document.getElementById('system-name').innerHTML = system.system.name;
+    document.getElementById('description').innerHTML = system.description;
+    document.getElementById('map-coordinates').innerHTML = `[ ${system.mapCoordinates} ]`;
 
-// 
-// 
-// UI 
-document.getElementById('system-name').innerHTML = system.system.name;
-document.getElementById('description').innerHTML = system.description;
+}
 
 // 
 // 
@@ -207,8 +203,15 @@ var loop = function () {
     }
 }
 
-loop();
 
+// 
+// 
+// stellarForge
+loadSystem('thozetis');
+camera.position.set(0,10,20);
+camera.lookAt(0,0,0);
+
+loop();
 
 function sceneTraverse (obj, fn) {
     if (!obj) return
@@ -229,7 +232,8 @@ function disposeChildren() {
 
 function loadSystem(systemName) {
 
-    let targetSystem = systems[systemName];
+    let name = systemName.replace(/\s/g, '');
+    let targetSystem = systems[name];
 
     system = new targetSystem(new THREE.Vector3(0, 0,0));
     scene.add(stellarForge(system));
@@ -238,6 +242,7 @@ function loadSystem(systemName) {
 
     createAtmosphere();
     randomPlacement();
+    updateInformation(system);
 }
 
 function createAtmosphere() {
@@ -269,11 +274,33 @@ function createAtmosphere() {
     }
 }
 
-let changeBtn = document.getElementById('changeBtn');
-
-changeBtn.onclick = function test() {
+let changeSystem = $('[name="diacritics"]');
+changeSystem.change(function(e){
     disposeChildren();
     resTracker.dispose();
     render();
-    loadSystem('NeoThozetis');
+    loadSystem(this.value);
+})
+
+$(document).ready(semantic_init);
+window.semantic_init = semantic_init;
+
+function semantic_init() {
+
+    let dropdown = $('#dropDownItems');
+    content.forEach(element => {
+        let div = document.createElement('div');
+        div.setAttribute('class', 'item');
+        div.innerHTML = element.name;
+
+        dropdown.append(div);
+    });
+
+    $('#diacriticsexample')
+        .dropdown({
+            ignoreDiacritics: true,
+            sortSelect: true,
+            fullTextSearch:'exact'
+        });
+
 };
