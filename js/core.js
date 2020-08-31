@@ -40,11 +40,39 @@ window.addEventListener('dblclick', function () {
 });
 
 function updateInformation() {
-    
-    document.getElementById('system-name').innerHTML = system.system.name;
-    document.getElementById('description').innerHTML = system.description;
-    document.getElementById('map-coordinates').innerHTML = `[ ${system.mapCoordinates} ]`;
 
+    $('#system-name').text(system.system.name);
+    $('#description').text(system.description);
+    $('#map-coordinates').text(`[ ${system.mapCoordinates} ]`);
+
+    createAlerts(system.alerts);
+
+    function createAlerts(alerts) {
+        let alertDiv = $('#alert-panel');
+        let alertList = $('#alert-list').empty();
+
+        if (!alerts || !alerts.length) {
+            alertDiv.hide();
+        } else {
+            alertDiv.show();
+
+            alerts.forEach(element => {
+                let item = $('<div>', {class: 'item'});
+                let icon = $('<i>', {class: `${element.icon} large icon`, alert: 'true'});
+                let content = $('<div>', {class: 'content'});
+                let header = $('<div>', {class: 'header', alert: 'true'});
+                let msg = $('<div>', {class: 'description', alert: 'true'});
+
+                header.text(element.title);
+                msg.text(element.msg);
+
+                content.append(header, msg);
+                item.append(icon, content);
+                alertList.append(item);
+            });
+
+        }
+    }
 }
 
 // 

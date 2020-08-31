@@ -18,7 +18,7 @@ class PlanetarySystem{
         this.description = 'Brak danych';
         this.mapCoordinates = '0 1 1';
         this.alerts = [
-            {icon: 'icon', title: 'title', msg: 'test msg'}
+            {icon: 'eye slash', title: 'System Nieodkryty', msg: 'Brak informacji i danych o tym systemie'}
         ];
 
     }

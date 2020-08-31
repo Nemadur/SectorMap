@@ -78,7 +78,7 @@ p,span{
     text-align: justify;
 }
 
-.alert-panel{
+#alert-panel{
     color: var(--alert-color);
 }
 
@@ -94,7 +94,7 @@ p,span{
     background-color: var(--background-color);
 }
 
-.ui.basic.segments.alert-panel{
+.ui.basic.segments#alert-panel{
     border-left: 3px solid;
     border-top: 3px solid;
     border-color: var(--alert-color);

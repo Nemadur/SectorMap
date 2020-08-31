@@ -17,7 +17,18 @@ class PlanetarySystem{
         this.light = 0xff6666;
         this.description = 'System Thozetis jest radioaktywnym zapomnianym przez świat miejscem.';
         this.mapCoordinates = '0 2 2';
-        this.alerts = [];
+        this.alerts = [
+            {
+                icon: 'radiation', 
+                title: 'Zagrożenie promieniowaniem !',
+                msg: 'Gwiazda Thozetis wydziela śmiertelne ilości promieniowania. Systemy tarcz mogą wytzrymać 24h zanim zostaną wypalone. Przebywanie poza statkiem sktukuje śmiercią w przeciągu godziny'
+            },
+            {
+                icon: 'fist raised', 
+                title: 'Obecni Dywersanci !',
+                msg: 'Grupa Meta-Temezerytów prowadzi tutaj swoje działania. Działają z ukrycia, zalecana ostrożność.'
+            }
+        ];
     }
 
     getPlanets() {
