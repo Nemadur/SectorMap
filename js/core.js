@@ -106,7 +106,7 @@ let delta = 0;
 let interval = 1 / 30;
 let scalar = -0.1;
 let scalarStep = 0.01
-let speedFactor = 0.3;
+let speedFactor = 0.17;
 
 var update = function(){
 

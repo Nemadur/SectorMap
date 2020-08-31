@@ -221,8 +221,8 @@ function createOrbit(data) {
 function createClouds(data) {
         
     var planes = 25;
-    var sphereGeometry = track(new THREE.SphereGeometry( data.radius+0.01, planes, planes ));
-
+    var sphereGeometry = track(new THREE.SphereGeometry( data.radius+0.05, planes, planes ));
+1
     let textureDir = `materials/${systemData.name.toLowerCase()}/${data.texture}_clouds.png`;
     let sphereMaterial = track(new THREE.MeshPhongMaterial({
         map: track(loader.load(textureDir)), 
